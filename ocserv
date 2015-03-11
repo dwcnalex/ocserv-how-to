@@ -1,0 +1,87 @@
+#! /bin/sh
+#
+# skeleton      example file to build /etc/init.d/ scripts.
+#               This file should be used to construct scripts for /etc/init.d.
+#
+#               Written by Miquel van Smoorenburg <miquels@cistron.nl>.
+#               Modified for Debian
+#               by Ian Murdock <imurdock@gnu.ai.mit.edu>.
+#               Further changes by Javier Fernandez-Sanguino <jfs@debian.org>
+#
+# Version:      @(#)skeleton  1.9  26-Feb-2001  miquels@cistron.nl
+#
+### BEGIN INIT INFO
+# Provides:          supervisor
+# Required-Start:    $remote_fs $network $named
+# Required-Stop:     $remote_fs $network $named
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Start/stop supervisor
+# Description:       Start/stop supervisor daemon and its configured
+#                    subprocesses.
+### END INIT INFO
+
+. /lib/lsb/init-functions
+
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+DAEMON=/opt/ocserv/sbin/ocserv
+NAME=ocserv
+DESC="open connet server"
+
+test -x $DAEMON || exit 0
+
+PIDFILE=/var/run/$NAME.pid
+DODTIME=5                   # Time to wait for the server to die, in seconds
+
+
+DAEMON_OPTS=" -c /opt/ocserv/etc/ocserv.conf $DAEMON_OPTS"
+
+set -e
+
+
+case "$1" in
+  start)
+        echo -n "Starting $DESC: "
+        #PID=`$DAEMON $DAEMON_OPTS > /dev/null 2>&1 & echo $!`
+        start-stop-daemon --start --quiet --pidfile $PIDFILE \
+                --startas $DAEMON -- $DAEMON_OPTS
+        test -f $PIDFILE || sleep 1
+
+        # running ; then
+         #   echo "$NAME."
+        #else
+         #   echo " ERROR."
+        #fi
+        ;;
+  stop)
+        echo -n "Stopping $DESC: "
+        start-stop-daemon --stop --quiet --oknodo --pidfile $PIDFILE
+        echo "$NAME."
+        ;;
+
+  restart)
+    echo -n "Restarting $DESC: "
+    start-stop-daemon --stop --quiet --oknodo --pidfile $PIDFILE
+        [ -n "$DODTIME" ] && sleep $DODTIME
+        start-stop-daemon --start --quiet --pidfile $PIDFILE \
+                --startas $DAEMON -- $DAEMON_OPTS
+        echo "$NAME."
+        ;;
+  status)
+    echo -n "$LABEL is "
+    if running ;  then
+        echo "running"
+    else
+        echo " not running."
+        exit 1
+    fi
+    ;;
+  *)
+        N=/etc/init.d/$NAME
+        # echo "Usage: $N {start|stop|restart|reload|force-reload}" >&2
+        echo "Usage: $N {start|stop|status}" >&2
+        exit 1
+        ;;
+esac
+
+exit 0
