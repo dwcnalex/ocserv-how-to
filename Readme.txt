@@ -114,8 +114,8 @@ iptables -t nat -A POSTROUTING -j SNAT --to-source <server ip> -o <nic>
 ```
 10.启动
 /opt/ocserv/sbin/ocserv  -c /opt/ocserv/etc/config
-
-搞定
-折腾完毕，AnyConnect 客户端可以成功使用了。
 把 <server ip> 和 <nic> 改为服务器公网 IP 和对应网卡的名称。
+
+：）搞定，折腾完毕，AnyConnect 客户端可以成功使用了。
+
 
