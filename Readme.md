@@ -66,7 +66,7 @@ $ cp *.pem /opt/ocserv/etc/ssl/
 ```
 
 6.配置
-file: `/opt/ocserv/etc/config`
+> File: `/opt/ocserv/etc/config`
 ```
 auth = "plain[/opt/ocserv/etc/passwd]"
 tcp-port = 443
