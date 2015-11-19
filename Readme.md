@@ -2,6 +2,10 @@
 
 ---
 
+AnyConnect 的好处是基于 HTTPS，证书可以申请 StartSSL 的，而且配置也不很复杂。
+另外配置文件里发现了很多专门为商业化/企业服务定制的选项，例如最大同时在线客户端数量，同账户最大在线设备数量等等。
+OpenConnect 是 AnyConnect 的开源实现。目前 0.8.0 以上版本需要 GnuTLS 3.1 以上版本，所以我们就可以直接在 Ubuntu 14.04 中搭建。另外 就算是基于 HTTPS，这货也是要用 TUN 设备的，所以 OpenVZ 用户们请注意。
+
 1.安装依赖包
 ```bash
 $ apt-get install build-essential libwrap0-dev libpam0g-dev libdbus-1-dev \
