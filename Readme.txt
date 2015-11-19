@@ -1,26 +1,34 @@
-ubuntu 14.04 
+# Setup ocserv  on Ubuntu 14.04
+
+---
 
 1.安装依赖包
-apt-get install build-essential libwrap0-dev libpam0g-dev libdbus-1-dev \
+```bash
+$ apt-get install build-essential libwrap0-dev libpam0g-dev libdbus-1-dev \
   libreadline-dev libnl-route-3-dev libprotobuf-c0-dev libpcl1-dev libopts25-dev \
   autogen libgnutls28 libgnutls28-dev libseccomp-dev libhttp-parser-dev
-  
-2.下载ocserv 
-wget https://fossies.org/linux/privat/ocserv-0.10.9.tar.gz
-tar zxvf ocserv-0.10.9.tar.gz
-cd ocserv-0.10.9
+```
+ 
+2.下载ocserv 源码
+```bash
+$ wget https://fossies.org/linux/privat/ocserv-0.10.9.tar.gz
+$ tar zxvf ocserv-0.10.9.tar.gz
+$ cd ocserv-0.10.9
+```
 
 3.编译安装
-./configure --prefix=/opt/ocserv
-make
-make install
-mkdir -p /opt/ocserv/etc/
-cat doc/sample.config | grep -v '^#' | grep -v '^$' > /opt/ocserv/etc/config
-
+```bash
+$ ./configure --prefix=/opt/ocserv
+$ make
+$ make install
+$ mkdir -p /opt/ocserv/etc/
+$ cat doc/sample.config | grep -v '^#' | grep -v '^$' > /opt/ocserv/etc/config
+```
 
 4.生成证书
-apt-get install gnutls-bin
-certtool --generate-privkey --outfile ca-key.pem
+```bash
+$ apt-get install gnutls-bin
+$ certtool --generate-privkey --outfile ca-key.pem
 cat <<_EOF_> ca.tmpl
 cn = "alex vpn"
 organization = "alex"
@@ -31,12 +39,13 @@ signing_key
 cert_signing_key
 crl_signing_key
 _EOF_
-  
-certtool --generate-self-signed --load-privkey ca-key.pem --template ca.tmpl --outfile ca-cert.pem
+$ certtool --generate-self-signed --load-privkey ca-key.pem --template ca.tmpl --outfile ca-cert.pem
+```
 
 5.生成服务器证书
-certtool --generate-privkey --outfile server-key.pem
-cat <<_EOF_> server.tmpl
+```bash
+$ certtool --generate-privkey --outfile server-key.pem
+$ cat <<_EOF_> server.tmpl
 cn = "alex vpn"
 organization = "alex"
 serial = 2
@@ -46,13 +55,14 @@ encryption_key
 tls_www_server
 _EOF_  
 
-certtool --generate-certificate --load-privkey server-key.pem --load-ca-certificate ca-cert.pem --load-ca-privkey ca-key.pem --template server.tmpl --outfile server-cert.pem
+$ certtool --generate-certificate --load-privkey server-key.pem --load-ca-certificate ca-cert.pem --load-ca-privkey ca-key.pem --template server.tmpl --outfile server-cert.pem
 
-mkdir -p /opt/ocserv/etc/ssl
-cp *.pem /opt/ocserv/etc/ssl/
+$ mkdir -p /opt/ocserv/etc/ssl
+$ cp *.pem /opt/ocserv/etc/ssl/
+```
 
 6.配置
-     file:/opt/ocserv/etc/config
+file: `/opt/ocserv/etc/config`
 ```
 auth = "plain[/opt/ocserv/etc/passwd]"
 tcp-port = 443
@@ -97,25 +107,34 @@ cisco-client-compat = true
 ```
 
 7.创建用户
-/opt/ocserv/bin/ocpasswd -c /opt/ocserv/etc/passwd username
+```bash
+$ /opt/ocserv/bin/ocpasswd -c /opt/ocserv/etc/passwd username
+```
 按提示输入两次密码。
 
-8.修改系统配置，允许转发
-vim /etc/sysctl.conf
+8.修改系统允许转发
+```bash
+$ vim /etc/sysctl.conf
 #修改这行
 net.ipv4.ip_forward=1
 #保存退出
-sysctl -p
-
-9.NAT
-iptables 规则
+$ sysctl -p
 ```
-iptables -t nat -A POSTROUTING -j SNAT --to-source <server ip> -o <nic>
-```
-10.启动
-/opt/ocserv/sbin/ocserv  -c /opt/ocserv/etc/config
-把 <server ip> 和 <nic> 改为服务器公网 IP 和对应网卡的名称。
 
-：）搞定，折腾完毕，AnyConnect 客户端可以成功使用了。
+9.开启NAT
+```bash
+$ iptables -t nat -A POSTROUTING -o venet0 -s 192.168.111.0/24 -j MASQUERADE 
+```
+
+10.启动ocserv
+```bash
+$ /opt/ocserv/sbin/ocserv  -c /opt/ocserv/etc/config
+```
+搞定，折腾完毕，世界安静了 :)
+
+
+
+
+
 
 
