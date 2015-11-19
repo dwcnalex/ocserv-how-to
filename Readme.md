@@ -16,6 +16,7 @@ $ apt-get install build-essential libwrap0-dev libpam0g-dev libdbus-1-dev \
 2.下载ocserv 源码
 ```bash
 $ wget https://fossies.org/linux/privat/ocserv-0.10.9.tar.gz
+  or  wget ftp://ftp.infradead.org/pub/ocserv/ocserv-0.10.9.tar.xz
 $ tar zxvf ocserv-0.10.9.tar.gz
 $ cd ocserv-0.10.9
 ```
