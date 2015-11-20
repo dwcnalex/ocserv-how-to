@@ -128,7 +128,8 @@ $ sysctl -p
 
 9.开启NAT
 ```bash
-$ iptables -t nat -A POSTROUTING -o venet0 -s 192.168.111.0/24 -j MASQUERADE 
+~~$ iptables -t nat -A POSTROUTING -o venet0 -s 192.168.111.0/24 -j MASQUERADE~~ 
+$ iptables -t nat -A POSTROUTING -s 192.168.111.0/24 -j MASQUERADE
 ```
 
 10.启动ocserv
